@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<!--
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License. See accompanying LICENSE file.
+-->
+
+<!-- Put site-specific property overrides in this file. -->
+
+<configuration>
+<!--HDFS超级用户 -->
+	<property>
+		<name>dfs.permissions.superusergroup</name>
+		<value>hadoop</value>
+	</property>
+ 
+	<!--开启web hdfs -->
+	<property>
+		<name>dfs.webhdfs.enabled</name>
+		<value>true</value>
+	</property>
+	<property>
+		<name>dfs.namenode.name.dir</name>
+		<value>/home/hadoop/app/hadoop-2.6.0-cdh5.7.0/data/dfs/name</value>
+		<description> namenode 存放name table(fsimage)本地目录（需要修改）</description>
+	</property>
+	<property>
+		<name>dfs.namenode.edits.dir</name>
+		<value>${dfs.namenode.name.dir}</value>
+		<description>namenode粗放 transaction file(edits)本地目录（需要修改）</description>
+	</property>
+	<property>
+		<name>dfs.datanode.data.dir</name>
+		<value>/home/hadoop/app/hadoop-2.6.0-cdh5.7.0/data/dfs/data</value>
+		<description>datanode存放block本地目录（需要修改）</description>
+	</property>
+	<property>
+		<name>dfs.replication</name>
+		<value>3</value>
+	</property>
+	<!-- 块大小256M （默认128M） -->
+	<property>
+		<name>dfs.blocksize</name>
+		<value>268435456</value>
+	</property>
+	<!--======================================================================= -->
+	<!--HDFS高可用配置 -->
+	<!--指定hdfs的nameservice为ruozeclusterg6,需要和core-site.xml中的保持一致 -->
+	<property>
+		<name>dfs.nameservices</name>
+		<value>xzdream</value>
+	</property>
+	<property>
+		<!--设置NameNode IDs 此版本最大只支持两个NameNode -->
+		<name>dfs.ha.namenodes.xzdream</name>
+		<value>nn1,nn2</value>
+	</property>
+ 
+	<!-- Hdfs HA: dfs.namenode.rpc-address.[nameservice ID] rpc 通信地址 -->
+	<property>
+		<name>dfs.namenode.rpc-address.xzdream.nn1</name>
+		<value>hadoop001:8020</value>
+	</property>
+	<property>
+		<name>dfs.namenode.rpc-address.xzdream.nn2</name>
+		<value>hadoop002:8020</value>
+	</property>
+ 
+	<!-- Hdfs HA: dfs.namenode.http-address.[nameservice ID] http 通信地址 -->
+	<property>
+		<name>dfs.namenode.http-address.xzdream.nn1</name>
+		<value>hadoop001:50070</value>
+	</property>
+	<property>
+		<name>dfs.namenode.http-address.xzdream.nn2</name>
+		<value>hadoop002:50070</value>
+	</property>
+ 
+	<!--==================Namenode editlog同步 ============================================ -->
+	<!--保证数据恢复 -->
+	<property>
+		<name>dfs.journalnode.http-address</name>
+		<value>0.0.0.0:8480</value>
+	</property>
+	<property>
+		<name>dfs.journalnode.rpc-address</name>
+		<value>0.0.0.0:8485</value>
+	</property>
+	<property>
+		<!--设置JournalNode服务器地址，QuorumJournalManager 用于存储editlog -->
+		<!--格式：qjournal://<host1:port1>;<host2:port2>;<host3:port3>/<journalId> 端口同journalnode.rpc-address -->
+		<name>dfs.namenode.shared.edits.dir</name>
+		<value>qjournal://hadoop001:8485;hadoop002:8485;hadoop003:8485/xzdream</value>
+	</property>
+ 
+	<property>
+		<!--JournalNode存放数据地址 -->
+		<name>dfs.journalnode.edits.dir</name>
+		<value>/home/hadoop/app/hadoop-2.6.0-cdh5.7.0/data/dfs/jn</value>
+	</property>
+	<!--==================DataNode editlog同步 ============================================ -->
+	<property>
+		<!--DataNode,Client连接Namenode识别选择Active NameNode策略 -->
+                             <!-- 配置失败自动切换实现方式 -->
+		<name>dfs.client.failover.proxy.provider.xzdream</name>
+		<value>org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider</value>
+	</property>
+	<!--==================Namenode fencing：=============================================== -->
+	<!--Failover后防止停掉的Namenode启动，造成两个服务 -->
+	<property>
+		<name>dfs.ha.fencing.methods</name>
+		<value>sshfence</value>
+	</property>
+	<property>
+		<name>dfs.ha.fencing.ssh.private-key-files</name>
+		<value>/home/hadoop/.ssh/id_rsa</value>
+	</property>
+	<property>
+		<!--多少milliseconds 认为fencing失败 -->
+		<name>dfs.ha.fencing.ssh.connect-timeout</name>
+		<value>30000</value>
+	</property>
+ 
+	<!--==================NameNode auto failover base ZKFC and Zookeeper====================== -->
+	<!--开启基于Zookeeper  -->
+	<property>
+		<name>dfs.ha.automatic-failover.enabled</name>
+		<value>true</value>
+	</property>
+	<!--动态许可datanode连接namenode列表 -->
+	 <property>
+	   <name>dfs.hosts</name>
+	   <value>/home/hadoop/app/hadoop-2.6.0-cdh5.7.0/etc/hadoop/slaves</value>
+	 </property>
+</configuration>
