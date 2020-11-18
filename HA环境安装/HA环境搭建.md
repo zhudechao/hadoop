@@ -219,6 +219,12 @@ hadoop002: starting zkfc, logging to /home/hadoop/app/hadoop-2.6.0-cdh5.7.0/logs
 [hadoop@hadoop002 sbin]$ ./yarn-daemon.sh start resourcemanager
 ```
 
+```
+上传一个文件到hdfs
+[hadoop@hadoop001 hadoop]$ hdfs dfs -put README.txt hdfs://xzdream
+[hadoop@hadoop001 hadoop]$ hdfs dfs -ls /
+```
+
 
 
 
