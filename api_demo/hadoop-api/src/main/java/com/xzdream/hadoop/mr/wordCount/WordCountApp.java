@@ -25,6 +25,9 @@ public class WordCountApp {
         job.setMapperClass(WordCountMapper.class);
         job.setReducerClass(WordCountReduce.class);
 
+        //Combiner 先在map端聚合，在分发给reduce，减少io,提升性能
+        job.setCombinerClass(WordCountReduce.class);
+
         job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(IntWritable.class);
 
